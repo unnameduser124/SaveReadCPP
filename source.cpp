@@ -83,9 +83,9 @@ struct fromFile loadToStructure(string filePath, int structNumber)
                 {
                     int innerAttributeCounter = 0;
                     string tempData = "";
-                    for (int i = 0; i < line.length() - 1; i++)
+                    for (int i = 0; i < line.length(); i++)
                     {
-                        if (line.at(i) != ' ' && i < line.length() - 2)
+                        if (line.at(i) != ' ' && i < line.length() - 1)
                         {
                             tempData += line.at(i);
                         }
@@ -103,7 +103,7 @@ struct fromFile loadToStructure(string filePath, int structNumber)
                         }
                         else if (innerAttributeCounter == 2)
                         {
-                            tempData += line.at(line.length() - 2);
+                            tempData += line.at(line.length() - 1);
                             loadedStructure.subStruct1.floatVariable = stof(tempData);
                             tempData = "";
                             innerAttributeCounter++;
@@ -115,9 +115,9 @@ struct fromFile loadToStructure(string filePath, int structNumber)
                 {
                     int innerAttributeCounter = 0;
                     string tempData = "";
-                    for (int i = 0; i < line.length() - 1; i++)
+                    for (int i = 0; i < line.length(); i++)
                     {
-                        if (line.at(i) != ' ' && i < line.length() - 2)
+                        if (line.at(i) != ' ' && i < line.length() - 1)
                         {
                             tempData += line.at(i);
                         }
@@ -135,7 +135,7 @@ struct fromFile loadToStructure(string filePath, int structNumber)
                         }
                         else if (innerAttributeCounter == 2)
                         {
-                            tempData += line.at(line.length() - 2);
+                            tempData += line.at(line.length() - 1);
                             loadedStructure.subStruct2.floatVariable = stof(tempData);
                             tempData = "";
                             innerAttributeCounter++;
@@ -147,9 +147,9 @@ struct fromFile loadToStructure(string filePath, int structNumber)
                 {
                     int innerAttributeCounter = 0;
                     string tempData = "";
-                    for (int i = 0; i < line.length() - 1; i++)
+                    for (int i = 0; i < line.length(); i++)
                     {
-                        if (line.at(i) != ' ' && i < line.length() - 2)
+                        if (line.at(i) != ' ' && i < line.length() - 1)
                         {
                             tempData += line.at(i);
                         }
@@ -167,7 +167,7 @@ struct fromFile loadToStructure(string filePath, int structNumber)
                         }
                         else if (innerAttributeCounter == 2)
                         {
-                            tempData += line.at(line.length() - 2);
+                            tempData += line.at(line.length() - 1);
                             loadedStructure.subStruct3.floatVariable = stof(tempData);
                             tempData = "";
                             innerAttributeCounter++;
@@ -179,9 +179,9 @@ struct fromFile loadToStructure(string filePath, int structNumber)
                 {
                     int innerAttributeCounter = 0;
                     string tempData = "";
-                    for (int i = 0; i < line.length() - 1; i++)
+                    for (int i = 0; i < line.length(); i++)
                     {
-                        if (line.at(i) != ' ' && i < line.length() - 2)
+                        if (line.at(i) != ' ' && i < line.length() - 1)
                         {
                             tempData += line.at(i);
                         }
@@ -199,13 +199,12 @@ struct fromFile loadToStructure(string filePath, int structNumber)
                         }
                         else if (innerAttributeCounter == 2)
                         {
-                            tempData += line.at(line.length() - 2);
+                            tempData += line.at(line.length() - 1);
                             loadedStructure.subStruct4.floatVariable = stof(tempData);
                             tempData = "";
                             innerAttributeCounter++;
                         }
                     }
-                    attributeCounter++;
                     break;
                 }
             }
@@ -216,6 +215,13 @@ struct fromFile loadToStructure(string filePath, int structNumber)
         cout << "File not found!";
     }
     return loadedStructure;
+}
+
+void clearFile(string filename)
+{
+    ofstream fileToClear;
+    fileToClear.open(filename);
+    fileToClear.close();
 }
 
 void saveStructToFile(string filename, struct fromFile structToSave)
@@ -240,9 +246,46 @@ void saveStructToFile(string filename, struct fromFile structToSave)
     }
 }
 
+void appendFile(string targetFilePath, string text){
+
+    ofstream targetFile(targetFilePath, ios::app);
+
+    if(targetFile.is_open()){
+        targetFile << text << endl; 
+    }
+    else{
+        cout << "Unable to open file";
+    }
+}
+
 void rewriteFile(string writeFrom, string writeTo)
 {
-    int currentLineNumber = 0;
+    clearFile(writeTo);
+    ifstream testFile;
+    string line;
+    testFile.open(writeFrom);
+
+    if (testFile.is_open())
+    {
+        while (getline(testFile, line))
+        {
+            appendFile(writeTo, line);    
+        }
+    }
+    else
+    {
+        cout << "Unable to open file";
+    }
+}
+
+bool compareStructByInt(struct fromFile bigger, struct fromFile smaller)
+{
+    return bigger.intVariable > smaller.intVariable;
+}
+
+int getNumberOfStructInFile(string filename)
+{
+    int lineNumber = 0;
 
     ifstream testFile;
     string line;
@@ -250,214 +293,82 @@ void rewriteFile(string writeFrom, string writeTo)
 
     if (testFile.is_open())
     {
-        int attributeCounter = 0;
-        struct fromFile loadTo;
         while (getline(testFile, line))
         {
-            if(currentLineNumber % 7 == 0 && currentLineNumber != 0){
-                saveStructToFile(writeTo, loadTo);
-            }
-            if (attributeCounter == 0)
-            {
-                loadTo.intVariable = stoi(line);
-                attributeCounter++;
-            }
-            else if (attributeCounter == 1)
-            {
-                loadTo.stringVariable = line;
-                attributeCounter++;
-            }
-            else if (attributeCounter == 2)
-            {
-                loadTo.charVariable = line.front();
-                attributeCounter++;
-            }
-            else if (attributeCounter == 3)
-            {
-                int innerAttributeCounter = 0;
-                string tempData = "";
-                for (int i = 0; i < line.length() - 1; i++)
-                {
-                    if (line.at(i) != ' ' && i < line.length() - 2)
-                    {
-                        tempData += line.at(i);
-                    }
-                    else if (innerAttributeCounter == 0)
-                    {
-                        loadTo.subStruct1.boolVariable = stoi(tempData);
-                        tempData = "";
-                        innerAttributeCounter++;
-                    }
-                    else if (innerAttributeCounter == 1)
-                    {
-                        loadTo.subStruct1.unsignedCharVariable = stoi(tempData);
-                        tempData = "";
-                        innerAttributeCounter++;
-                    }
-                    else if (innerAttributeCounter == 2)
-                    {
-                        tempData += line.at(line.length() - 2);
-                        loadTo.subStruct1.floatVariable = stof(tempData);
-                        tempData = "";
-                        innerAttributeCounter++;
-                    }
-                }
-                attributeCounter++;
-            }
-            else if (attributeCounter == 4)
-            {
-                int innerAttributeCounter = 0;
-                string tempData = "";
-                for (int i = 0; i < line.length() - 1; i++)
-                {
-                    if (line.at(i) != ' ' && i < line.length() - 2)
-                    {
-                        tempData += line.at(i);
-                    }
-                    else if (innerAttributeCounter == 0)
-                    {
-                        loadTo.subStruct2.boolVariable = stoi(tempData);
-                        tempData = "";
-                        innerAttributeCounter++;
-                    }
-                    else if (innerAttributeCounter == 1)
-                    {
-                        loadTo.subStruct2.unsignedCharVariable = stoi(tempData);
-                        tempData = "";
-                        innerAttributeCounter++;
-                    }
-                    else if (innerAttributeCounter == 2)
-                    {
-                        tempData += line.at(line.length() - 2);
-                        loadTo.subStruct2.floatVariable = stof(tempData);
-                        tempData = "";
-                        innerAttributeCounter++;
-                    }
-                }
-                attributeCounter++;
-            }
-            else if (attributeCounter == 5)
-            {
-                int innerAttributeCounter = 0;
-                string tempData = "";
-                for (int i = 0; i < line.length() - 1; i++)
-                {
-                    if (line.at(i) != ' ' && i < line.length() - 2)
-                    {
-                        tempData += line.at(i);
-                    }
-                    else if (innerAttributeCounter == 0)
-                    {
-                        loadTo.subStruct3.boolVariable = stoi(tempData);
-                        tempData = "";
-                        innerAttributeCounter++;
-                    }
-                    else if (innerAttributeCounter == 1)
-                    {
-                        loadTo.subStruct3.unsignedCharVariable = stoi(tempData);
-                        tempData = "";
-                        innerAttributeCounter++;
-                    }
-                    else if (innerAttributeCounter == 2)
-                    {
-                        tempData += line.at(line.length() - 2);
-                        loadTo.subStruct3.floatVariable = stof(tempData);
-                        tempData = "";
-                        innerAttributeCounter++;
-                    }
-                }
-                attributeCounter++;
-            }
-            else if (attributeCounter == 6)
-            {
-                int innerAttributeCounter = 0;
-                string tempData = "";
-                for (int i = 0; i < line.length() - 1; i++)
-                {
-                    if (line.at(i) != ' ' && i < line.length() - 2)
-                    {
-                        tempData += line.at(i);
-                    }
-                    else if (innerAttributeCounter == 0)
-                    {
-                        loadTo.subStruct4.boolVariable = stoi(tempData);
-                        tempData = "";
-                        innerAttributeCounter++;
-                    }
-                    else if (innerAttributeCounter == 1)
-                    {
-                        loadTo.subStruct4.unsignedCharVariable = stoi(tempData);
-                        tempData = "";
-                        innerAttributeCounter++;
-                    }
-                    else if (innerAttributeCounter == 2)
-                    {
-                        tempData += line.at(line.length() - 2);
-                        loadTo.subStruct4.floatVariable = stof(tempData);
-                        tempData = "";
-                        innerAttributeCounter++;
-                    }
-                }
-                attributeCounter = 0;
-            }
-            currentLineNumber++;
-        }
-        saveStructToFile(writeTo, loadTo);
-    }
-    else
-    {
-        cout << "File not found!";
-    }
-}
-
-void clearFile(string filename){
-    ofstream fileToClear;
-    fileToClear.open(filename);
-    fileToClear.close();
-}
-
-bool compareStructByInt(struct fromFile bigger, struct fromFile smaller){
-    return bigger.intVariable>smaller.intVariable;
-}
-
-int getNumberOfStructInFile(string filename){
-    int lineNumber = 0;
-
-    ifstream testFile;
-    string line;
-    testFile.open("testy/input1.txt");
-
-    if (testFile.is_open()){
-        while (getline(testFile, line)){
             lineNumber++;
         }
     }
-    else{
+    else
+    {
         cout << "Unable to open file";
     }
 
-    return lineNumber/7;
+    return lineNumber / 7;
 }
 
-void sortInt(string source, string pom1="", string pom2="")
+int getMinimum(string filepath, int startingStructNumber)
 {
-    int structNumber = getNumberOfStructInFile(source);
-    clearFile(pom1);
+    int minimum;
+    int minimumStructureNumber = startingStructNumber;
 
-    struct fromFile smallestNumber;
-    smallestNumber = loadToStructure(source, 0);
-    for (int i=1; i<structNumber; i++){
-        struct fromFile candidateNumber;
-        candidateNumber = loadToStructure(source, i);
-        if(candidateNumber.intVariable < smallestNumber.intVariable){
-            smallestNumber = candidateNumber;
+    int structNumber = getNumberOfStructInFile(filepath);
+
+    for (int i = startingStructNumber; i < structNumber; i++)
+    {
+        if (i == startingStructNumber)
+        {
+            minimum = loadToStructure(filepath, i).intVariable;
+        }
+        else
+        {
+            int candidate = loadToStructure(filepath, i).intVariable;
+            if (candidate < minimum)
+            {
+                minimum = candidate;
+                minimumStructureNumber = i;
+            }
         }
     }
-    saveStructToFile(pom1, smallestNumber);
+    return minimumStructureNumber;
+}
+
+void swapStrucuresInFile(string sourcePath, string pom, int swapFromNumber, int swapStructureNumber)
+{
+
+    int structNumber = getNumberOfStructInFile(sourcePath);
+    clearFile(pom);
+    for (int i = 0; i < structNumber; i++)
+    {
+        if (i == swapFromNumber)
+        {
+            saveStructToFile(pom, loadToStructure(sourcePath, swapStructureNumber));
+        }
+        else if (i == swapStructureNumber)
+        {
+            saveStructToFile(pom, loadToStructure(sourcePath, swapFromNumber));
+        }
+        else
+        {
+            struct fromFile nextStructureToSave;
+            nextStructureToSave = loadToStructure(sourcePath, i);
+            saveStructToFile(pom, nextStructureToSave);
+        }
+    }
+}
+
+void sortInt(string sourcePath, string pom1 = "", string pom2 = "")
+{
+    int structureNumberInFile = getNumberOfStructInFile(sourcePath);
+    for (int currentStructureNumber = 0; currentStructureNumber < structureNumberInFile; currentStructureNumber++)
+    {
+        int swapStrucureNumber = getMinimum(sourcePath, currentStructureNumber);
+        swapStrucuresInFile(sourcePath, pom1, currentStructureNumber, swapStrucureNumber);
+        rewriteFile(pom1, sourcePath);
+    }
 }
 
 int main()
 {
-    sortInt("testy/input1.txt", "getSmallestFromInput1.txt");
+    sortInt("testy/input2.txt", "test_swap_structures_0_10.txt");
     return 0;
 }
