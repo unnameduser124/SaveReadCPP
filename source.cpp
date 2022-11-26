@@ -51,7 +51,6 @@ struct fromFile loadToStructure(string filePath, int structNumber)
     string line;
     int attributeCounter = 0;
     testFile.open("testy/input1.txt");
-    bool loaded = false;
 
     if (testFile.is_open())
     {
@@ -63,7 +62,6 @@ struct fromFile loadToStructure(string filePath, int structNumber)
             }
             else
             {
-                loaded = true;
                 if (attributeCounter == 0)
                 {
                     loadedStructure.intVariable = stoi(line);
@@ -367,8 +365,71 @@ void sortInt(string sourcePath, string pom1 = "", string pom2 = "")
     }
 }
 
+bool compareString(string higherAlfabetically, string lowerAlfabetically){
+    if(higherAlfabetically.length()>lowerAlfabetically.length()){
+
+        for(int i=0; i<lowerAlfabetically.length(); i++){
+            int lowerCharToInt = tolower(lowerAlfabetically.at(i));
+            int higherCharToInt = tolower(higherAlfabetically.at(i));
+            if(lowerCharToInt>higherCharToInt){
+                return false;
+            }
+            else{
+                return true;
+            }
+        }
+    }
+    else{
+
+        for(int i=0; i<higherAlfabetically.length(); i++){
+            int lowerCharToInt = tolower(lowerAlfabetically.at(i));
+            int higherCharToInt = tolower(higherAlfabetically.at(i));
+            if(lowerCharToInt>higherCharToInt){
+                return false;
+            }
+            else{
+                return true;
+            }
+        }
+    }
+    return true;
+}
+
+int getLowestAlphabetically(string filepath, int startingStructure){
+    int structuresInFile = getNumberOfStructInFile(filepath);
+    string lowestString;
+    int lowestStructureNumber;
+
+    for(int i=startingStructure; i<structuresInFile; i++){
+        if(i==startingStructure){
+            struct fromFile firstStructure = loadToStructure(filepath, i);
+            lowestString = firstStructure.stringVariable;
+            lowestStructureNumber = i;
+        }
+        else{
+            struct fromFile candidateStructure = loadToStructure(filepath, i);
+            if(compareString(lowestString, candidateStructure.stringVariable)){
+                lowestString = candidateStructure.stringVariable;
+                lowestStructureNumber = i;
+            }
+        }
+    }
+    return lowestStructureNumber;
+}
+
+void sortString(string sourcePath, string pom1="", string pom2=""){
+    int structuresInFile = getNumberOfStructInFile(sourcePath);
+    for (int currentStructureNumber = 0; currentStructureNumber < structuresInFile; currentStructureNumber++)
+    {
+        int swapStrucureNumber = getLowestAlphabetically(sourcePath, currentStructureNumber);
+        swapStrucuresInFile(sourcePath, pom1, currentStructureNumber, swapStrucureNumber);
+        rewriteFile(pom1, sourcePath);
+    }
+}
+
 int main()
 {
-    sortInt("testy/input2.txt", "test_swap_structures_0_10.txt");
+    //sortInt("testy/input2.txt", "test_swap_structures_0_10.txt");
+    sortString("testy/input2.txt", "test_sort_string.txt");
     return 0;
 }
