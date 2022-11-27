@@ -222,7 +222,7 @@ void clearFile(string filename)
     fileToClear.close();
 }
 
-void saveStructToFile(string filename, struct fromFile structToSave)
+void appendStructToFile(string filename, struct fromFile structToSave)
 {
     ofstream fileToSave(filename, ios::app);
     if (fileToSave.is_open())
@@ -246,7 +246,6 @@ void saveStructToFile(string filename, struct fromFile structToSave)
 
 void appendFile(string targetFilePath, string text)
 {
-
     ofstream targetFile(targetFilePath, ios::app);
 
     if (targetFile.is_open())
@@ -342,22 +341,22 @@ void swapStrucuresInFile(string sourcePath, string pom, int swapFromNumber, int 
     {
         if (i == swapFromNumber)
         {
-            saveStructToFile(pom, loadStructure(sourcePath, swapStructureNumber));
+            appendStructToFile(pom, loadStructure(sourcePath, swapStructureNumber));
         }
         else if (i == swapStructureNumber)
         {
-            saveStructToFile(pom, loadStructure(sourcePath, swapFromNumber));
+            appendStructToFile(pom, loadStructure(sourcePath, swapFromNumber));
         }
         else
         {
             struct fromFile nextStructureToSave;
             nextStructureToSave = loadStructure(sourcePath, i);
-            saveStructToFile(pom, nextStructureToSave);
+            appendStructToFile(pom, nextStructureToSave);
         }
     }
 }
 
-void sortInt(string sourcePath, string pom1 = "", string pom2 = "")
+void sortInt(string sourcePath, string pom1, string pom2 = "")
 {
     int structureNumberInFile = getNumberOfStructInFile(sourcePath);
     for (int currentStructureNumber = 0; currentStructureNumber < structureNumberInFile; currentStructureNumber++)
@@ -434,7 +433,7 @@ int getLowestAlphabetically(string filepath, int startingStructure)
     return lowestStructureNumber;
 }
 
-void sortString(string sourcePath, string pom1 = "", string pom2 = "")
+void sortString(string sourcePath, string pom1, string pom2 = "")
 {
     int structuresInFile = getNumberOfStructInFile(sourcePath);
     for (int currentStructureNumber = 0; currentStructureNumber < structuresInFile; currentStructureNumber++)
@@ -604,7 +603,7 @@ int getHighestCount(string filepath, int startingStructure)
     return highestOccurenceStructureNumber;
 }
 
-void sortCount(string sourcePath, string pom1 = "", string pom2 = "")
+void sortCount(string sourcePath, string pom1, string pom2 = "")
 {
     int structuresInFile = getNumberOfStructInFile(sourcePath);
     for (int currentStructureNumber = 0; currentStructureNumber < structuresInFile; currentStructureNumber++)
@@ -616,9 +615,99 @@ void sortCount(string sourcePath, string pom1 = "", string pom2 = "")
     }
 }
 
+bool compareStructures(struct fromFile structOne, struct fromFile structTwo){
+    if(structOne.intVariable!=structTwo.intVariable){
+        return false;
+    }
+    else if(structOne.stringVariable!=structTwo.stringVariable){
+        return false;
+    }
+    else if(structOne.charVariable!=structTwo.charVariable){
+        return false;
+    }
+    else if(structOne.subStruct1.boolVariable!=structTwo.subStruct1.boolVariable){
+        return false;
+    }
+    else if(structOne.subStruct1.unsignedCharVariable!=structTwo.subStruct1.unsignedCharVariable){
+        return false;
+    }
+    else if(structOne.subStruct1.floatVariable!=structTwo.subStruct1.floatVariable){
+        return false;
+    }
+    else if(structOne.subStruct2.boolVariable!=structTwo.subStruct2.boolVariable){
+        return false;
+    }
+    else if(structOne.subStruct2.unsignedCharVariable!=structTwo.subStruct2.unsignedCharVariable){
+        return false;
+    }
+    else if(structOne.subStruct2.floatVariable!=structTwo.subStruct2.floatVariable){
+        return false;
+    }
+    else if(structOne.subStruct3.boolVariable!=structTwo.subStruct3.boolVariable){
+        return false;
+    }
+    else if(structOne.subStruct3.unsignedCharVariable!=structTwo.subStruct3.unsignedCharVariable){
+        return false;
+    }
+    else if(structOne.subStruct3.floatVariable!=structTwo.subStruct3.floatVariable){
+        return false;
+    }
+    else if(structOne.subStruct4.boolVariable!=structTwo.subStruct4.boolVariable){
+        return false;
+    }
+    else if(structOne.subStruct4.unsignedCharVariable!=structTwo.subStruct4.unsignedCharVariable){
+        return false;
+    }
+    else if(structOne.subStruct4.floatVariable!=structTwo.subStruct4.floatVariable){
+        return false;
+    }
+    return true;
+}
+
+void removeStructureFromFile(string filename, string pom1, int structNumber){
+    int structNumberInFile = getNumberOfStructInFile(filename);
+    clearFile(pom1);
+
+    for(int i=0; i<structNumberInFile; i++){
+        if(i!=structNumber){
+            struct fromFile structureToSave = loadStructure(filename, i);
+            appendStructToFile(pom1, structureToSave);
+        }
+    }
+
+    rewriteFile(pom1, filename);
+}
+
+bool structureInFile(struct fromFile structFromFile, string filepath){
+    int structNumberInFile = getNumberOfStructInFile(filepath);
+
+    for(int i=0; i<structNumberInFile; i++){
+        struct fromFile candidateStructure = loadStructure(filepath, i);
+        if(compareStructures(candidateStructure, structFromFile)){
+            return true;
+        }
+    }
+    return false;
+}
+
+void SymmetricDifference(string fileAppendTo, string fileRemoveFrom, string pom1){
+    int structuresInFile = getNumberOfStructInFile(fileRemoveFrom);
+    for (int currentStructureNumber = 0; currentStructureNumber < structuresInFile; currentStructureNumber++)
+    {
+        struct fromFile candidate = loadStructure(fileRemoveFrom, currentStructureNumber);
+        if(!structureInFile(candidate, fileAppendTo)){
+            appendStructToFile(fileAppendTo, candidate);
+            removeStructureFromFile(fileRemoveFrom, pom1, currentStructureNumber);
+            structuresInFile = getNumberOfStructInFile(fileRemoveFrom);
+            currentStructureNumber--;
+        }
+    }
+}
+
 int main()
 {
     // sortInt("testy/input2.txt", "test_swap_structures_0_10.txt");
-    sortCount("testy/input2.txt", "test_sort_count_input2.txt");
+    //sortCount("testy/input2.txt", "test_sort_count_input2.txt");
+    SymmetricDifference("testy/input1.txt", "testy/input2.txt", "pom_file.txt");
     return 0;
 }
