@@ -42,7 +42,7 @@ void structToString(struct fromFile toStringStructure)
     cout << "Substruct 4 float: " << toStringStructure.subStruct4.floatVariable << endl;
 }
 
-struct fromFile loadToStructure(string filePath, int structNumber)
+struct fromFile loadStructure(string filePath, int structNumber)
 {
     struct fromFile loadedStructure;
     int currentLineNumber = 0;
@@ -50,7 +50,7 @@ struct fromFile loadToStructure(string filePath, int structNumber)
     ifstream testFile;
     string line;
     int attributeCounter = 0;
-    testFile.open("testy/input1.txt");
+    testFile.open(filePath);
 
     if (testFile.is_open())
     {
@@ -244,14 +244,17 @@ void saveStructToFile(string filename, struct fromFile structToSave)
     }
 }
 
-void appendFile(string targetFilePath, string text){
+void appendFile(string targetFilePath, string text)
+{
 
     ofstream targetFile(targetFilePath, ios::app);
 
-    if(targetFile.is_open()){
-        targetFile << text << endl; 
+    if (targetFile.is_open())
+    {
+        targetFile << text << endl;
     }
-    else{
+    else
+    {
         cout << "Unable to open file";
     }
 }
@@ -267,7 +270,7 @@ void rewriteFile(string writeFrom, string writeTo)
     {
         while (getline(testFile, line))
         {
-            appendFile(writeTo, line);    
+            appendFile(writeTo, line);
         }
     }
     else
@@ -287,7 +290,7 @@ int getNumberOfStructInFile(string filename)
 
     ifstream testFile;
     string line;
-    testFile.open("testy/input1.txt");
+    testFile.open(filename);
 
     if (testFile.is_open())
     {
@@ -315,11 +318,11 @@ int getMinimum(string filepath, int startingStructNumber)
     {
         if (i == startingStructNumber)
         {
-            minimum = loadToStructure(filepath, i).intVariable;
+            minimum = loadStructure(filepath, i).intVariable;
         }
         else
         {
-            int candidate = loadToStructure(filepath, i).intVariable;
+            int candidate = loadStructure(filepath, i).intVariable;
             if (candidate < minimum)
             {
                 minimum = candidate;
@@ -339,16 +342,16 @@ void swapStrucuresInFile(string sourcePath, string pom, int swapFromNumber, int 
     {
         if (i == swapFromNumber)
         {
-            saveStructToFile(pom, loadToStructure(sourcePath, swapStructureNumber));
+            saveStructToFile(pom, loadStructure(sourcePath, swapStructureNumber));
         }
         else if (i == swapStructureNumber)
         {
-            saveStructToFile(pom, loadToStructure(sourcePath, swapFromNumber));
+            saveStructToFile(pom, loadStructure(sourcePath, swapFromNumber));
         }
         else
         {
             struct fromFile nextStructureToSave;
-            nextStructureToSave = loadToStructure(sourcePath, i);
+            nextStructureToSave = loadStructure(sourcePath, i);
             saveStructToFile(pom, nextStructureToSave);
         }
     }
@@ -365,29 +368,38 @@ void sortInt(string sourcePath, string pom1 = "", string pom2 = "")
     }
 }
 
-bool compareString(string higherAlfabetically, string lowerAlfabetically){
-    if(higherAlfabetically.length()>lowerAlfabetically.length()){
+bool compareString(string higherAlfabetically, string lowerAlfabetically)
+{
+    if (higherAlfabetically.length() > lowerAlfabetically.length())
+    {
 
-        for(int i=0; i<lowerAlfabetically.length(); i++){
+        for (int i = 0; i < lowerAlfabetically.length(); i++)
+        {
             int lowerCharToInt = tolower(lowerAlfabetically.at(i));
             int higherCharToInt = tolower(higherAlfabetically.at(i));
-            if(lowerCharToInt>higherCharToInt){
+            if (lowerCharToInt > higherCharToInt)
+            {
                 return false;
             }
-            else{
+            else
+            {
                 return true;
             }
         }
     }
-    else{
+    else
+    {
 
-        for(int i=0; i<higherAlfabetically.length(); i++){
+        for (int i = 0; i < higherAlfabetically.length(); i++)
+        {
             int lowerCharToInt = tolower(lowerAlfabetically.at(i));
             int higherCharToInt = tolower(higherAlfabetically.at(i));
-            if(lowerCharToInt>higherCharToInt){
+            if (lowerCharToInt > higherCharToInt)
+            {
                 return false;
             }
-            else{
+            else
+            {
                 return true;
             }
         }
@@ -395,20 +407,25 @@ bool compareString(string higherAlfabetically, string lowerAlfabetically){
     return true;
 }
 
-int getLowestAlphabetically(string filepath, int startingStructure){
+int getLowestAlphabetically(string filepath, int startingStructure)
+{
     int structuresInFile = getNumberOfStructInFile(filepath);
     string lowestString;
     int lowestStructureNumber;
 
-    for(int i=startingStructure; i<structuresInFile; i++){
-        if(i==startingStructure){
-            struct fromFile firstStructure = loadToStructure(filepath, i);
+    for (int i = startingStructure; i < structuresInFile; i++)
+    {
+        if (i == startingStructure)
+        {
+            struct fromFile firstStructure = loadStructure(filepath, i);
             lowestString = firstStructure.stringVariable;
             lowestStructureNumber = i;
         }
-        else{
-            struct fromFile candidateStructure = loadToStructure(filepath, i);
-            if(compareString(lowestString, candidateStructure.stringVariable)){
+        else
+        {
+            struct fromFile candidateStructure = loadStructure(filepath, i);
+            if (compareString(lowestString, candidateStructure.stringVariable))
+            {
                 lowestString = candidateStructure.stringVariable;
                 lowestStructureNumber = i;
             }
@@ -417,7 +434,8 @@ int getLowestAlphabetically(string filepath, int startingStructure){
     return lowestStructureNumber;
 }
 
-void sortString(string sourcePath, string pom1="", string pom2=""){
+void sortString(string sourcePath, string pom1 = "", string pom2 = "")
+{
     int structuresInFile = getNumberOfStructInFile(sourcePath);
     for (int currentStructureNumber = 0; currentStructureNumber < structuresInFile; currentStructureNumber++)
     {
@@ -427,9 +445,180 @@ void sortString(string sourcePath, string pom1="", string pom2=""){
     }
 }
 
+int countIntOccurence(string filepath, int structureNumber)
+{
+    int structuresInFile = getNumberOfStructInFile(filepath);
+    struct fromFile countedStructure = loadStructure(filepath, structureNumber);
+    int occurenceCounter = 0;
+    for (int i = 0; i < structuresInFile; i++)
+    {
+        struct fromFile candidateStructure = loadStructure(filepath, i);
+        if (candidateStructure.intVariable == countedStructure.intVariable)
+        {
+            occurenceCounter++;
+        }
+    }
+    return occurenceCounter;
+}
+
+int countCharSum1(string filepath, int structureNumber)
+{
+    int structuresInFile = getNumberOfStructInFile(filepath);
+    struct fromFile summedStructure = loadStructure(filepath, structureNumber);
+
+    return (int)summedStructure.subStruct1.unsignedCharVariable;
+}
+int countCharSum2(string filepath, int structureNumber)
+{
+    int structuresInFile = getNumberOfStructInFile(filepath);
+    struct fromFile summedStructure = loadStructure(filepath, structureNumber);
+
+    return (int)summedStructure.subStruct1.unsignedCharVariable +
+           (int)summedStructure.subStruct2.unsignedCharVariable;
+}
+int countCharSum3(string filepath, int structureNumber)
+{
+    int structuresInFile = getNumberOfStructInFile(filepath);
+    struct fromFile summedStructure = loadStructure(filepath, structureNumber);
+
+    return (int)summedStructure.subStruct1.unsignedCharVariable +
+           (int)summedStructure.subStruct2.unsignedCharVariable +
+           (int)summedStructure.subStruct3.unsignedCharVariable;
+}
+int countCharSum4(string filepath, int structureNumber)
+{
+    int structuresInFile = getNumberOfStructInFile(filepath);
+    struct fromFile summedStructure = loadStructure(filepath, structureNumber);
+
+    return (int)summedStructure.subStruct1.unsignedCharVariable +
+           (int)summedStructure.subStruct2.unsignedCharVariable +
+           (int)summedStructure.subStruct3.unsignedCharVariable +
+           (int)summedStructure.subStruct4.unsignedCharVariable;
+}
+
+int getHighestCount(string filepath, int startingStructure)
+{
+    int structuresInFile = getNumberOfStructInFile(filepath);
+    struct fromFile highestStructure;
+    int highestOccurence;
+    int highestCharSum1;
+    int highestCharSum2;
+    int highestCharSum3;
+    int highestCharSum4;
+    int highestOccurenceStructureNumber;
+
+    for (int i = startingStructure; i < structuresInFile; i++)
+    {
+        if (i == startingStructure)
+        {
+            highestStructure = loadStructure(filepath, i);
+            highestOccurence = countIntOccurence(filepath, i);
+            highestOccurenceStructureNumber = i;
+            highestCharSum1 = countCharSum1(filepath, i);
+            highestCharSum2 = countCharSum2(filepath, i);
+            highestCharSum3 = countCharSum3(filepath, i);
+            highestCharSum4 = countCharSum4(filepath, i);
+        }
+        else
+        {
+            struct fromFile candidate = loadStructure(filepath, i);
+            int occurenceForCandidate = countIntOccurence(filepath, i);
+            int candidateCharSum1 = candidateCharSum1;
+            int candidateCharSum2 = candidateCharSum2;
+            int candidateCharSum3 = candidateCharSum3;
+            int candidateCharSum4 = candidateCharSum4;
+            if (occurenceForCandidate > highestOccurence)
+            {
+                highestStructure = loadStructure(filepath, i);
+                highestOccurence = countIntOccurence(filepath, i);
+                highestOccurenceStructureNumber = i;
+                highestCharSum1 = candidateCharSum1;
+                highestCharSum2 = candidateCharSum2;
+                highestCharSum3 = candidateCharSum3;
+                highestCharSum4 = candidateCharSum4;
+            }
+            else if (candidate.intVariable > highestStructure.intVariable && occurenceForCandidate == highestOccurence)
+            {
+                highestStructure = loadStructure(filepath, i);
+                highestOccurence = countIntOccurence(filepath, i);
+                highestOccurenceStructureNumber = i;
+                highestCharSum1 = candidateCharSum1;
+                highestCharSum2 = candidateCharSum2;
+                highestCharSum3 = candidateCharSum3;
+                highestCharSum4 = candidateCharSum4;
+            }
+            else if (candidate.intVariable == highestStructure.intVariable && occurenceForCandidate == highestOccurence && candidate.intVariable == highestStructure.intVariable)
+            {
+                if (candidateCharSum1 > highestCharSum1)
+                {
+                    highestStructure = loadStructure(filepath, i);
+                    highestOccurence = countIntOccurence(filepath, i);
+                    highestOccurenceStructureNumber = i;
+                    highestCharSum1 = candidateCharSum1;
+                    highestCharSum2 = candidateCharSum2;
+                    highestCharSum3 = candidateCharSum3;
+                    highestCharSum4 = candidateCharSum4;
+                }
+            }
+            else if (candidate.intVariable == highestStructure.intVariable && occurenceForCandidate == highestOccurence && candidate.intVariable == highestStructure.intVariable && candidateCharSum1 == highestCharSum1)
+            {
+                if (candidateCharSum2 > highestCharSum2)
+                {
+                    highestStructure = loadStructure(filepath, i);
+                    highestOccurence = countIntOccurence(filepath, i);
+                    highestOccurenceStructureNumber = i;
+                    highestCharSum1 = candidateCharSum1;
+                    highestCharSum2 = candidateCharSum2;
+                    highestCharSum3 = candidateCharSum3;
+                    highestCharSum4 = candidateCharSum4;
+                }
+            }
+            else if (candidate.intVariable == highestStructure.intVariable && occurenceForCandidate == highestOccurence && candidate.intVariable == highestStructure.intVariable && candidateCharSum1 == highestCharSum1 && candidateCharSum2 == highestCharSum2)
+            {
+                if (candidateCharSum3 > highestCharSum3)
+                {
+                    highestStructure = loadStructure(filepath, i);
+                    highestOccurence = countIntOccurence(filepath, i);
+                    highestOccurenceStructureNumber = i;
+                    highestCharSum1 = candidateCharSum1;
+                    highestCharSum2 = candidateCharSum2;
+                    highestCharSum3 = candidateCharSum3;
+                    highestCharSum4 = candidateCharSum4;
+                }
+            }
+            else if (candidate.intVariable == highestStructure.intVariable && occurenceForCandidate == highestOccurence && candidate.intVariable == highestStructure.intVariable && candidateCharSum1 == highestCharSum1 && candidateCharSum2 == highestCharSum2 && candidateCharSum3 == highestCharSum3)
+            {
+                if (candidateCharSum4 > highestCharSum4)
+                {
+                    highestStructure = loadStructure(filepath, i);
+                    highestOccurence = countIntOccurence(filepath, i);
+                    highestOccurenceStructureNumber = i;
+                    highestCharSum1 = candidateCharSum1;
+                    highestCharSum2 = candidateCharSum2;
+                    highestCharSum3 = candidateCharSum3;
+                    highestCharSum4 = candidateCharSum4;
+                }
+            }
+        }
+    }
+    return highestOccurenceStructureNumber;
+}
+
+void sortCount(string sourcePath, string pom1 = "", string pom2 = "")
+{
+    int structuresInFile = getNumberOfStructInFile(sourcePath);
+    for (int currentStructureNumber = 0; currentStructureNumber < structuresInFile; currentStructureNumber++)
+    {
+        int swapStrucureNumber = getHighestCount(sourcePath, currentStructureNumber);
+        struct fromFile swapStruct = loadStructure(sourcePath, swapStrucureNumber);
+        swapStrucuresInFile(sourcePath, pom1, currentStructureNumber, swapStrucureNumber);
+        rewriteFile(pom1, sourcePath);
+    }
+}
+
 int main()
 {
-    //sortInt("testy/input2.txt", "test_swap_structures_0_10.txt");
-    sortString("testy/input2.txt", "test_sort_string.txt");
+    // sortInt("testy/input2.txt", "test_swap_structures_0_10.txt");
+    sortCount("testy/input2.txt", "test_sort_count_input2.txt");
     return 0;
 }
