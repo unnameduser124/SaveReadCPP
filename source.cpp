@@ -62,8 +62,9 @@ float stringToFloat(string convertedString)
         }
         returnFloat += intPartConverted;
     }
-    else{
-        returnFloat = (float) stringToInt(convertedString);
+    else
+    {
+        returnFloat = (float)stringToInt(convertedString);
     }
     return returnFloat;
 }
@@ -112,14 +113,26 @@ struct fromFile loadStructure(string filePath, int structNumber)
                 }
                 else if (attributeCounter == 2)
                 {
-                    loadedStructure.charVariable = line.at(0);
+                    if (line.at(0) != ' ')
+                    {
+                        loadedStructure.charVariable = line.at(0);
+                    }
+                    else
+                    {
+                        loadedStructure.charVariable = line.at(1);
+                    }
                     attributeCounter++;
                 }
                 else if (attributeCounter == 3)
                 {
                     int innerAttributeCounter = 0;
                     string tempData = "";
-                    for (int i = 0; i < line.length(); i++)
+                    int i = 0;
+                    if (line.at(i) == ' ')
+                    {
+                        i++;
+                    }
+                    for (i; i < line.length(); i++)
                     {
                         if (line.at(i) != ' ' && i < line.length() - 1)
                         {
@@ -151,7 +164,12 @@ struct fromFile loadStructure(string filePath, int structNumber)
                 {
                     int innerAttributeCounter = 0;
                     string tempData = "";
-                    for (int i = 0; i < line.length(); i++)
+                    int i = 0;
+                    if (line.at(i) == ' ')
+                    {
+                        i++;
+                    }
+                    for (i; i < line.length(); i++)
                     {
                         if (line.at(i) != ' ' && i < line.length() - 1)
                         {
@@ -183,7 +201,12 @@ struct fromFile loadStructure(string filePath, int structNumber)
                 {
                     int innerAttributeCounter = 0;
                     string tempData = "";
-                    for (int i = 0; i < line.length(); i++)
+                    int i = 0;
+                    if (line.at(i) == ' ')
+                    {
+                        i++;
+                    }
+                    for (i; i < line.length(); i++)
                     {
                         if (line.at(i) != ' ' && i < line.length() - 1)
                         {
@@ -215,7 +238,12 @@ struct fromFile loadStructure(string filePath, int structNumber)
                 {
                     int innerAttributeCounter = 0;
                     string tempData = "";
-                    for (int i = 0; i < line.length(); i++)
+                    int i = 0;
+                    if (line.at(i) == ' ')
+                    {
+                        i++;
+                    }
+                    for (i; i < line.length(); i++)
                     {
                         if (line.at(i) != ' ' && i < line.length() - 1)
                         {
@@ -260,7 +288,7 @@ void clearFile(string filename)
 void appendStructToFile(string filename, struct fromFile structToSave)
 {
     fstream fileToSave;
-    fileToSave.open(filename.c_str(), ios::app | ios_base::binary);
+    fileToSave.open(filename.c_str(), ios::app | ios_base::binary | ios::out);
     if (fileToSave.is_open())
     {
         fileToSave << structToSave.intVariable << endl;
@@ -279,7 +307,7 @@ void appendStructToFile(string filename, struct fromFile structToSave)
 void appendFile(string targetFilePath, string text)
 {
     fstream targetFile;
-    targetFile.open(targetFilePath.c_str(), ios::app | ios_base::binary);
+    targetFile.open(targetFilePath.c_str(), ios::app | ios_base::binary | ios::out);
 
     if (targetFile.is_open())
     {
@@ -293,14 +321,17 @@ void rewriteFile(string writeFrom, string writeTo)
     fstream testFile;
     string line;
     testFile.open(writeFrom.c_str(), ios::in | ios_base::binary);
+    string content = "";
 
     if (testFile.is_open())
     {
         while (getline(testFile, line))
         {
-            appendFile(writeTo, line);
+            content+=line;
+            content+="\n";
         }
     }
+    appendFile(writeTo, content);
 }
 
 bool compareStructByInt(struct fromFile bigger, struct fromFile smaller)
@@ -487,39 +518,16 @@ int countIntOccurence(string filepath, int structureNumber)
     return occurenceCounter;
 }
 
-int countCharSum1(string filepath, int structureNumber)
+int countCharSum(string filepath, int structureNumber)
 {
     int structuresInFile = getNumberOfStructInFile(filepath.c_str());
     struct fromFile summedStructure = loadStructure(filepath.c_str(), structureNumber);
+    int sum = summedStructure.subStruct1.unsignedCharVariable +
+              summedStructure.subStruct2.unsignedCharVariable +
+              summedStructure.subStruct3.unsignedCharVariable +
+              summedStructure.subStruct4.unsignedCharVariable;
 
-    return summedStructure.subStruct1.unsignedCharVariable;
-}
-int countCharSum2(string filepath, int structureNumber)
-{
-    int structuresInFile = getNumberOfStructInFile(filepath.c_str());
-    struct fromFile summedStructure = loadStructure(filepath.c_str(), structureNumber);
-
-    return summedStructure.subStruct1.unsignedCharVariable +
-           summedStructure.subStruct2.unsignedCharVariable;
-}
-int countCharSum3(string filepath, int structureNumber)
-{
-    int structuresInFile = getNumberOfStructInFile(filepath.c_str());
-    struct fromFile summedStructure = loadStructure(filepath.c_str(), structureNumber);
-
-    return summedStructure.subStruct1.unsignedCharVariable +
-           summedStructure.subStruct2.unsignedCharVariable +
-           summedStructure.subStruct3.unsignedCharVariable;
-}
-int countCharSum4(string filepath, int structureNumber)
-{
-    int structuresInFile = getNumberOfStructInFile(filepath.c_str());
-    struct fromFile summedStructure = loadStructure(filepath.c_str(), structureNumber);
-
-    return summedStructure.subStruct1.unsignedCharVariable +
-           summedStructure.subStruct2.unsignedCharVariable +
-           summedStructure.subStruct3.unsignedCharVariable +
-           summedStructure.subStruct4.unsignedCharVariable;
+    return sum%255;
 }
 
 int getHighestCount(string filepath, int startingStructure)
@@ -527,10 +535,7 @@ int getHighestCount(string filepath, int startingStructure)
     int structuresInFile = getNumberOfStructInFile(filepath.c_str());
     struct fromFile highestStructure;
     int highestOccurence;
-    int highestCharSum1;
-    int highestCharSum2;
-    int highestCharSum3;
-    int highestCharSum4;
+    int highestCharSum;
     int highestOccurenceStructureNumber;
 
     for (int i = startingStructure; i < structuresInFile; i++)
@@ -540,103 +545,35 @@ int getHighestCount(string filepath, int startingStructure)
             highestStructure = loadStructure(filepath.c_str(), i);
             highestOccurence = countIntOccurence(filepath.c_str(), i);
             highestOccurenceStructureNumber = i;
-            highestCharSum1 = countCharSum1(filepath.c_str(), i);
-            highestCharSum2 = countCharSum2(filepath.c_str(), i);
-            highestCharSum3 = countCharSum3(filepath.c_str(), i);
-            highestCharSum4 = countCharSum4(filepath.c_str(), i);
+            highestCharSum = countCharSum(filepath.c_str(), i);
         }
         else
         {
             struct fromFile candidate = loadStructure(filepath.c_str(), i);
             int occurenceForCandidate = countIntOccurence(filepath.c_str(), i);
-            int candidateCharSum1 = candidateCharSum1;
-            int candidateCharSum2 = candidateCharSum2;
-            int candidateCharSum3 = candidateCharSum3;
-            int candidateCharSum4 = candidateCharSum4;
+            int candidateCharSum = countCharSum(filepath.c_str(), i);
             if (occurenceForCandidate > highestOccurence)
             {
                 highestStructure = loadStructure(filepath.c_str(), i);
                 highestOccurence = countIntOccurence(filepath.c_str(), i);
                 highestOccurenceStructureNumber = i;
-                highestCharSum1 = candidateCharSum1;
-                highestCharSum2 = candidateCharSum2;
-                highestCharSum3 = candidateCharSum3;
-                highestCharSum4 = candidateCharSum4;
+                highestCharSum = candidateCharSum;
             }
             else if (candidate.intVariable > highestStructure.intVariable && occurenceForCandidate == highestOccurence)
             {
                 highestStructure = loadStructure(filepath.c_str(), i);
                 highestOccurence = countIntOccurence(filepath.c_str(), i);
                 highestOccurenceStructureNumber = i;
-                highestCharSum1 = candidateCharSum1;
-                highestCharSum2 = candidateCharSum2;
-                highestCharSum3 = candidateCharSum3;
-                highestCharSum4 = candidateCharSum4;
+                highestCharSum = candidateCharSum;
             }
-            else if (candidate.intVariable == highestStructure.intVariable 
-            && occurenceForCandidate == highestOccurence 
-            && candidate.intVariable == highestStructure.intVariable)
+            else if (candidate.intVariable == highestStructure.intVariable && occurenceForCandidate == highestOccurence && candidate.intVariable == highestStructure.intVariable)
             {
-                if (candidateCharSum1 > highestCharSum1)
+                if (candidateCharSum > highestCharSum)
                 {
                     highestStructure = loadStructure(filepath.c_str(), i);
                     highestOccurence = countIntOccurence(filepath.c_str(), i);
                     highestOccurenceStructureNumber = i;
-                    highestCharSum1 = candidateCharSum1;
-                    highestCharSum2 = candidateCharSum2;
-                    highestCharSum3 = candidateCharSum3;
-                    highestCharSum4 = candidateCharSum4;
-                }
-            }
-            else if (candidate.intVariable == highestStructure.intVariable 
-            && occurenceForCandidate == highestOccurence 
-            && candidate.intVariable == highestStructure.intVariable 
-            && candidateCharSum1 == highestCharSum1)
-            {
-                if (candidateCharSum2 > highestCharSum2)
-                {
-                    highestStructure = loadStructure(filepath.c_str(), i);
-                    highestOccurence = countIntOccurence(filepath.c_str(), i);
-                    highestOccurenceStructureNumber = i;
-                    highestCharSum1 = candidateCharSum1;
-                    highestCharSum2 = candidateCharSum2;
-                    highestCharSum3 = candidateCharSum3;
-                    highestCharSum4 = candidateCharSum4;
-                }
-            }
-            else if (candidate.intVariable == highestStructure.intVariable 
-            && occurenceForCandidate == highestOccurence 
-            && candidate.intVariable == highestStructure.intVariable 
-            && candidateCharSum1 == highestCharSum1 
-            && candidateCharSum2 == highestCharSum2)
-            {
-                if (candidateCharSum3 > highestCharSum3)
-                {
-                    highestStructure = loadStructure(filepath.c_str(), i);
-                    highestOccurence = countIntOccurence(filepath.c_str(), i);
-                    highestOccurenceStructureNumber = i;
-                    highestCharSum1 = candidateCharSum1;
-                    highestCharSum2 = candidateCharSum2;
-                    highestCharSum3 = candidateCharSum3;
-                    highestCharSum4 = candidateCharSum4;
-                }
-            }
-            else if (candidate.intVariable == highestStructure.intVariable 
-            && occurenceForCandidate == highestOccurence 
-            && candidate.intVariable == highestStructure.intVariable 
-            && candidateCharSum1 == highestCharSum1 
-            && candidateCharSum2 == highestCharSum2 
-            && candidateCharSum3 == highestCharSum3)
-            {
-                if (candidateCharSum4 > highestCharSum4)
-                {
-                    highestStructure = loadStructure(filepath.c_str(), i);
-                    highestOccurence = countIntOccurence(filepath.c_str(), i);
-                    highestOccurenceStructureNumber = i;
-                    highestCharSum1 = candidateCharSum1;
-                    highestCharSum2 = candidateCharSum2;
-                    highestCharSum3 = candidateCharSum3;
-                    highestCharSum4 = candidateCharSum4;
+                    highestCharSum = candidateCharSum;
                 }
             }
         }
@@ -770,4 +707,8 @@ void SymmetricDifference(string fileAppendTo, string fileRemoveFrom, string pom1
             currentStructureNumber--;
         }
     }
+}
+
+int main(){
+    SortCount("testy/input2.txt", "pom1.txt");
 }
